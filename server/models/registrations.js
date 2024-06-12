@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const registionSchema = new Schema({
+const registrationsSchema = new Schema({
     subject_id: {
         type: Schema.Types.ObjectId,
         require: true,
@@ -11,8 +11,17 @@ const registionSchema = new Schema({
         type: Schema.Types.ObjectId,
         require: true,
         ref: "students"
+    },
+    group_code: {
+        type: String,
+        require: true
+    },
+    lecture_id: {
+        type: Schema.Types.ObjectId,
+        require: true,
+        ref: "staffs"
     }
 
 })
 
-module.exports = mongoose.model('registion', registionSchema)
+module.exports = mongoose.model('registrations', registrationsSchema)

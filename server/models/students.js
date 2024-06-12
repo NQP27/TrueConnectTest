@@ -5,7 +5,8 @@ const studentsSchema = new Schema({
     person_id: {
         type: Schema.Types.ObjectId,
         require: true,
-        ref: "persons"
+        ref: "persons",
+        unique: true
     },
     class_id: {
         require: true,
@@ -15,6 +16,7 @@ const studentsSchema = new Schema({
     student_code: {
         type: String,
         require: true,
+        unique: true
     }
 })
 

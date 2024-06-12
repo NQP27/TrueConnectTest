@@ -12,7 +12,8 @@ const subjectsSchema = new Schema({
     },
     subject_code: {
         type: String,
-        require: true
+        require: true,
+        unique: true
 
     }
 })

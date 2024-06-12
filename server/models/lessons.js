@@ -15,6 +15,10 @@ const lessonsSchema = new Schema({
     date: {
         type: Date,
         require: true
+    },
+    group_code: {
+        type: String,
+        require: true
     }
 
 })

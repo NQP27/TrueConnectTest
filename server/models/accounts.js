@@ -24,7 +24,7 @@ const accountsSchema = new Schema({
     role: {
         type: String,
         require: true,
-        enum: ["HS", "GV", "AD"]
+        enum: ["SV", "GV", "AD"]
     }
 })
 

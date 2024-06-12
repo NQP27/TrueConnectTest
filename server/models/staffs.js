@@ -5,7 +5,8 @@ const staffsSchema = new Schema({
     person_id: {
         type: Schema.Types.ObjectId,
         require: true,
-        ref: "persons"
+        ref: "persons",
+        unique: true
     },
     faculty_id: {
         type: Schema.Types.ObjectId,
@@ -14,7 +15,8 @@ const staffsSchema = new Schema({
     },
     staff_code: {
         type: String,
-        require: true
+        require: true,
+        unique: true
     }
 
 })
