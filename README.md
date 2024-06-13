@@ -1,3 +1,7 @@
+## Table of Contents
+- [Giới thiệu](#gioi_thieu)
+- [Cấu trúc thư mục](#cau_truc_thu_muc)
+- [Công nghệ](#cong_nghe)
 ## Giới thiệu
 - Đây là một project cá nhân về hệ thống quản lý sinh viên, giảng viên và quản lý việc điểm danh của sinh viên
 ## Cấu trúc thư mục
@@ -32,5 +36,14 @@ server/
 - API: REST API
 - Cơ sở dữ liệu: MongoDB
 - Authentication: JSON Web Tokens
+## Mô hình ERD cơ sở dữ liệu
+![Database](https://github.com/NQP27/TrueConnectTest/blob/main/server/database.jpg)
+- Mapping:
+![Mapping](https://github.com/NQP27/TrueConnectTest/blob/main/server/mapping_database.png)
+## Routes
+- auth.js: Người dùng đăng nhập vào hệ thống
+  + endpoit: '/api/auth/login', method: POST
+- control.js: Nghiệp vụ thêm dữ liệu vào database (Only Admin)
+
 
 
