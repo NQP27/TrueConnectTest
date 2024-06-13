@@ -16,7 +16,7 @@ const registrationsSchema = new Schema({
         type: String,
         require: true
     },
-    lecture_id: {
+    lecturer_id: {
         type: Schema.Types.ObjectId,
         require: true,
         ref: "staffs"

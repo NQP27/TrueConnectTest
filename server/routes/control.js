@@ -403,15 +403,15 @@ router.post('/api/control/registrations', verifyToken, isAdmin, async(req, res) 
 //Add lesson
 //Access: Only Admin
 router.post('/api/control/lessons', verifyToken, isAdmin, async(req, res) => {
-    const { lecture_code, subject_code, date, group_code } = req.body
-    if (!lecture_code || !subject_code || !date || !group_code) {
+    const { lecturer_code, subject_code, date, group_code } = req.body
+    if (!lecturer_code || !subject_code || !date || !group_code) {
         return res
             .status(400)
             .json({ success: false, msg: "Some fields are undefined. Try again." })
     }
     try {
         const subject = await subjects.findOne({ subject_code })
-        const lecturer = await staffs.findOne({ staff_code: lecture_code })
+        const lecturer = await staffs.findOne({ staff_code: lecturer_code })
         if (!subject) {
             return res
                 .status(404)

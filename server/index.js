@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const controlRoute = require('./routes/control')
 const authRoute = require('./routes/auth')
 const studentRoute = require('./routes/student')
-const lectureRoute = require('./routes/lecture')
+const lecturerRoute = require('./routes/lecturer')
 
 
 const app = express()
@@ -14,7 +14,7 @@ app.use(express.json())
 app.use(controlRoute)
 app.use(authRoute)
 app.use(studentRoute)
-app.use(lectureRoute)
+app.use(lecturerRoute)
 const connectDB = async() => {
     try {
         await mongoose.connect('mongodb://localhost:27017')
