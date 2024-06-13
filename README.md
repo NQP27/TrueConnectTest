@@ -38,7 +38,7 @@ server/
 - Authentication: JSON Web Tokens
 ## Mô hình ERD cơ sở dữ liệu
 ![Database](https://github.com/NQP27/TrueConnectTest/blob/main/server/database.jpg)
-- Mapping:
+- Mapping:  
 ![Mapping](https://github.com/NQP27/TrueConnectTest/blob/main/server/mapping_database.png)
 ## Routes
 - auth.js: Người dùng đăng nhập vào hệ thống
