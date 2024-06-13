@@ -58,7 +58,7 @@ router.get('/api/lecturer/informations/me', verifyToken, async(req, res) => {
     }
 })
 
-// GET responsible class
+// GET consult classes
 // Access: Private GV, AD
 router.get('/api/lecturer/classes/consult', verifyToken, isLecturer, async(req, res) => {
     try {
@@ -110,7 +110,7 @@ router.get('/api/lecturer/classes/consult', verifyToken, isLecturer, async(req, 
     }
 })
 
-// GET detail responsible class
+// GET consult classdetail
 // Access: Private GV,AD
 router.get('/api/lecturer/classes/consult/:class_code', verifyToken, isLecturer, async(req, res) => {
     try {

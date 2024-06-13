@@ -5,6 +5,7 @@ const classes = require('../models/classes')
 const students = require('../models/students')
 const registrations = require('../models/registrations')
 const lessons = require('../models/lessons')
+const attendance = require('../models/attendance')
 const router = express.Router()
 
 //GET general information
@@ -28,34 +29,61 @@ router.get('/api/student/informations/me', verifyToken, async(req, res) => {
                     }
                 }
             })
+        const {
+            username,
+            person_id: {
+                person_code,
+                first_name,
+                last_name,
+                email,
+                citizen_id,
+                phone,
+                sex: gender,
+                dob: birthday,
+                recent_address,
+                ward_id: {
+                    name: ward,
+                    district_id: {
+                        name: district,
+                        province_id: {
+                            name: province
+                        }
+                    }
+                }
+            },
+            role,
+            createdAt: created_at
+
+        } = raw_data
+
         const result = {
-            account_id: raw_data._id,
-            username: raw_data.username,
-            person_code: raw_data.person_id.person_code,
-            first_name: raw_data.person_id.first_name,
-            last_name: raw_data.person_id.last_name,
-            email: raw_data.person_id.email,
-            citizen_id: raw_data.person_id.citizen_id,
-            phone: raw_data.person_id.phone,
-            gender: raw_data.person_id.sex,
-            birthday: raw_data.person_id.dob,
-            recent_address: raw_data.person_id.recent_address,
-            ward: raw_data.person_id.ward_id.name,
-            district: raw_data.person_id.ward_id.district_id.name,
-            province: raw_data.person_id.ward_id.district_id.province_id.name,
-            role: raw_data.role,
-            created_at: raw_data.createdAt
+            account_id,
+            username,
+            person_code,
+            first_name,
+            last_name,
+            email,
+            citizen_id,
+            phone,
+            gender,
+            birthday,
+            recent_address,
+            ward,
+            district,
+            province,
+            role,
+            created_at
         }
-        res.json({ success: true, data: result })
+        return res.status(200).json({ success: true, data: result })
     } catch (error) {
         console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
 
-//GET student-subject information
+//GET group classes
 //Access: Private SV
-router.get('/api/student/subjects', verifyToken, async(req, res) => {
+router.get('/api/student/group-class', verifyToken, async(req, res) => {
     try {
         const account_id = req.userId
 
@@ -117,9 +145,9 @@ router.get('/api/student/subjects', verifyToken, async(req, res) => {
 
 
 
-//GET group class's student list
+//GET group class detail
 //Access: Private SV
-router.get('/api/student/subjects/:group_code', verifyToken, async(req, res) => {
+router.get('/api/student/group-class/:group_code', verifyToken, async(req, res) => {
     try {
         const { group_code } = req.params
         const raw_data = await registrations.find({ group_code })
@@ -164,7 +192,7 @@ router.get('/api/student/subjects/:group_code', verifyToken, async(req, res) => 
 
 
 
-//GET class's student list
+//GET class's students
 //Access: Private SV
 router.get('/api/student/class/:class_code', verifyToken, async(req, res) => {
     try {
@@ -201,7 +229,7 @@ router.get('/api/student/class/:class_code', verifyToken, async(req, res) => {
     }
 })
 
-//GET lessons list
+//GET lessons
 //Access: Private GV, AD
 router.get('/api/student/lessons', verifyToken, async(req, res) => {
     try {
@@ -253,10 +281,73 @@ router.get('/api/student/lessons', verifyToken, async(req, res) => {
 
 
 
-//GET roll call infor
+//GET roll call 
 //Access: Private HS
-router.get('/api/student/informations/subjects/roll-call/', verifyToken, async(req, res) => {
+router.get('/api/student/lessons/roll-call/:lesson_id', verifyToken, async(req, res) => {
+    const { lesson_id } = req.params
+    try {
+        const account_id = req.userId
 
+        const person = await accounts.findOne({ _id: account_id })
+        const person_id = person.person_id
+
+        const student = await students.findOne({ person_id })
+        const student_id = student._id
+
+        const raw_data = await attendance.findOne({ student_id, lesson_id })
+            .populate({
+                path: "lesson_id",
+                select: ["group_code", "date"],
+                populate: [{
+                        path: "lecturer_id",
+                        select: null,
+                        populate: {
+                            path: "person_id",
+                            select: ["first_name", "last_name"]
+                        }
+
+                    },
+                    {
+                        path: "subject_id",
+                        select: ["subject_code", "name"]
+                    }
+                ]
+            })
+
+        const {
+            lesson_id: {
+                subject_id: {
+                    subject_code,
+                    name: subject_name
+                },
+                lecturer_id: {
+                    person_id: {
+                        first_name,
+                        last_name
+                    }
+                },
+                group_code
+            },
+            date,
+            is_attended
+        } = raw_data;
+
+        const lecture_fullname = `${first_name} ${last_name}`;
+
+        const data = {
+            subject_code,
+            subject_name,
+            lecture_fullname,
+            group_code,
+            date,
+            is_attended
+        };
+        // return res.status(200).json({ success: true, data: raw_data })
+        return res.status(200).json({ success: true, data: data })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: 'Internal server error' })
+    }
 })
 
 
