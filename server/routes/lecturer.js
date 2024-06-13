@@ -9,6 +9,7 @@ const classes = require('../models/classes')
 const registrations = require('../models/registrations')
 const isLecturer = require('../middleware/isLecturer')
 const lessons = require('../models/lessons')
+const attendance = require('../models/attendance')
 
 
 //GET general information
@@ -275,14 +276,64 @@ router.get('/api/lecturer/lessons', verifyToken, isLecturer, async(req, res) => 
     }
 })
 
-
-
 //POST roll call form
 //Access: Private GV, AD
-router.post('/api/lecturer/roll-call/', verifyToken, isLecturer, async(req, res) => {
+router.post('/api/lecturer/lessons/roll-call/:lesson_id', verifyToken, isLecturer, async(req, res) => {
+    try {
+        const { lesson_id } = req.params
+        const lesson = await lessons.findOne({ _id: lesson_id })
+        const group_code = lesson.group_code
+        const student_list = await registrations.find({ group_code })
 
-
+        const form = await Promise.all(student_list.map(async(item) => {
+            const student_id = item.student_id
+            const is_attended = "0"
+            const dup = await attendance.findOne({ lesson_id, student_id })
+            if (dup) {
+                return { lesson_id, is_attended, student_id, dup: true }
+            }
+            return { lesson_id, is_attended, student_id, dup: false }
+        }))
+        const check_dup = form.find(item => item.dup === true)
+        if (check_dup) {
+            return res
+                .status(400)
+                .json({ success: false, msg: `Some students are duplicated in the form`, form })
+        }
+        form.forEach(async(item) => {
+            const newRollCall = new attendance({ item })
+            await newRollCall.save()
+        })
+        return res.status(200).json({ success: true, msg: 'Roll call form created', form })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: 'Internal server error' })
+    }
 })
+
+
+//PATCH tick roll call
+//Access: Private GV, AD
+router.patch('/api/lecturer/lessons/roll-call/:lesson_id/:student_id', verifyToken, isLecturer, async(req, res) => {
+    const { lesson_id, student_id } = req.params
+    try {
+        const recentRollCall = await attendance.findOne({ lesson_id, student_id })
+        const recent_status = recentRollCall.is_attended
+        const new_status = recent_status === "0" ? "1" : "0"
+        const updatedRollCall = await attendance.findOneAndUpdate({ lesson_id, student_id }, { is_attended: new_status }, { new: true })
+
+        console.log({ recentRollCall, recent_status, new_status })
+        return res
+            .status(200)
+            .json({ success: true, msg: updatedRollCall })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: 'Internal server error' })
+    }
+})
+
+
 
 
 module.exports = router

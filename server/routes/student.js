@@ -4,6 +4,7 @@ const accounts = require('../models/accounts')
 const classes = require('../models/classes')
 const students = require('../models/students')
 const registrations = require('../models/registrations')
+const lessons = require('../models/lessons')
 const router = express.Router()
 
 //GET general information
@@ -54,7 +55,7 @@ router.get('/api/student/informations/me', verifyToken, async(req, res) => {
 
 //GET student-subject information
 //Access: Private SV
-router.get('/api/student/informations/subjects', verifyToken, async(req, res) => {
+router.get('/api/student/subjects', verifyToken, async(req, res) => {
     try {
         const account_id = req.userId
 
@@ -76,7 +77,7 @@ router.get('/api/student/informations/subjects', verifyToken, async(req, res) =>
                     select: ["first_name", "last_name"]
                 }
             }, {
-                path: "lecture_id",
+                path: "lecturer_id",
                 select: null,
                 populate: {
                     path: "person_id",
@@ -94,7 +95,7 @@ router.get('/api/student/informations/subjects', verifyToken, async(req, res) =>
             const subject_name = item.subject_id.name
             const student_code = item.student_id.student_code
             const student_fullname = `${item.student_id.person_id.first_name} ${item.student_id.person_id.last_name}`
-            const lecture_fullname = `${item.lecture_id.person_id.first_name} ${item.lecture_id.person_id.last_name}`
+            const lecture_fullname = `${item.lecturer_id.person_id.first_name} ${item.lecturer_id.person_id.last_name}`
             const group_code = item.group_code
             return {
                 student_code,
@@ -118,7 +119,7 @@ router.get('/api/student/informations/subjects', verifyToken, async(req, res) =>
 
 //GET group class's student list
 //Access: Private SV
-router.get('/api/student/informations/subjects/:group_code', verifyToken, async(req, res) => {
+router.get('/api/student/subjects/:group_code', verifyToken, async(req, res) => {
     try {
         const { group_code } = req.params
         const raw_data = await registrations.find({ group_code })
@@ -165,7 +166,7 @@ router.get('/api/student/informations/subjects/:group_code', verifyToken, async(
 
 //GET class's student list
 //Access: Private SV
-router.get('/api/student/informations/class/:class_code', verifyToken, async(req, res) => {
+router.get('/api/student/class/:class_code', verifyToken, async(req, res) => {
     try {
         const { class_code } = req.params
         const _class = await classes.findOne({ class_code })
@@ -198,6 +199,64 @@ router.get('/api/student/informations/class/:class_code', verifyToken, async(req
         console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
+})
+
+//GET lessons list
+//Access: Private GV, AD
+router.get('/api/student/lessons', verifyToken, async(req, res) => {
+    try {
+        const account_id = req.userId
+
+        const person = await accounts.findOne({ _id: account_id })
+        const person_id = person.person_id
+
+        const student = await students.findOne({ person_id })
+        const student_id = student._id
+
+        const registrationsList = await registrations.find({ student_id });
+        const group_codes = registrationsList.map(registration => registration.group_code)
+
+        const raw_data = await lessons.find({ group_code: { $in: group_codes } })
+            .populate([{
+                path: "subject_id",
+                select: ["subject_code", "name"]
+            }, {
+                path: "lecturer_id",
+                select: [],
+                populate: {
+                    path: "person_id",
+                    select: ["first_name", "last_name"]
+                }
+            }])
+
+        const data = raw_data.map((item) => {
+            const class_id = item._id
+            const subject_code = item.subject_id.subject_code
+            const subject_name = item.subject_id.name
+            const lecturer_name = `${item.lecturer_id.person_id.first_name} ${item.lecturer_id.person_id.last_name}`
+            const date = item.date
+            return {
+                class_id,
+                subject_code,
+                subject_name,
+                lecturer_name,
+                date
+            }
+        })
+        console.log(group_codes)
+        return res.status(200).json({ success: true, data: data })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: 'Internal server error' })
+    }
+})
+
+
+
+//GET roll call infor
+//Access: Private HS
+router.get('/api/student/informations/subjects/roll-call/', verifyToken, async(req, res) => {
+
 })
 
 
