@@ -1,6 +1,6 @@
 
 ## Table of Contents
-- [Giới thiệu](#gioi-thieu)
+- [Giới thiệu](#giới-thiệu)
 - [Cấu trúc thư mục](#cấu-trúc-thư-mục)
 - [Công nghệ](#công-nghệ)
 - [Cơ sở dữ liệu](#cơ-sở-dữ-liệu)
