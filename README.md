@@ -27,17 +27,10 @@ server/
 │ ├── student.js  
 ├── .env  
 └── index.js  
-
-### Example Requests
-
-#### Add a Student
-```bash
-curl -X POST http://127.0.0.1:5000/students
-
 ## Công nghệ
 - Ngôn ngữ: ExpressJS
+- API: REST API
 - Cơ sở dữ liệu: MongoDB
-- Quản lý API: REST API
-- Authentication: JsonWebToken
-## Cơ sở dữ liệu
+- Authentication: JSON Web Tokens
+
 
