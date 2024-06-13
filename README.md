@@ -36,7 +36,9 @@ server/
 - API: REST API
 - Cơ sở dữ liệu: MongoDB
 - Authentication: JSON Web Tokens
-## Mô hình ERD cơ sở dữ liệu
+## Cơ sở dữ liệu
+- ERD:
+  
 ![Database](https://github.com/NQP27/TrueConnectTest/blob/main/server/database.jpg)
 - Mapping:
   
@@ -45,6 +47,22 @@ server/
 - auth.js: Người dùng đăng nhập vào hệ thống
   + endpoit: '/api/auth/login', method: POST
 - control.js: Nghiệp vụ thêm dữ liệu vào database (Only Admin)
-
-
+  +  Endpoint: '/api/control/address/provinces'
+     Method: POST
+     Chức năng: Thêm các bản ghi tỉnh
+  +  Endpoint: '/api/control/address/districts'
+     Method: POST
+     Chức năng: Thêm các bản ghi quận/ huyện
+  +  Endpoint: '/api/control/address/wards'
+     Method: POST
+     Chức năng: Thêm các bản ghi phường/ xã
+  +  Endpoint: '/api/control/persons'
+     Method: POST
+     Chức năng: Thêm các bản ghi person (bao gốm sinh viên, giảng viên trong trường)
+  +  Endpoint: '/api/control/faculties'
+     Method: POST
+     Chức năng: Thêm các bản ghi khoa
+  +  Endpoint: '/api/control/classes'
+     Method: POST
+     Chức năng: Thêm các bản ghi lớp 
 
